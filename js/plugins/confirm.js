@@ -11,17 +11,17 @@ displayJS.confirm = function(options){
 			},
 			footerButtons: [
 				{text: 'Удалить', type: 'danger', handler() {
-					modal.close()
-					resolve()
-				}},
+						modal.close()
+						resolve()
+					}},
 				{text: 'Отмена', type: 'secondary', handler() {
-					modal.close()
-					reject()
-				}},
+						modal.close()
+						reject()
+					}},
 			],
 		})
 		setTimeout(() => {
 			modal.open()
 		}, 100)
 	})
-} 
+}
