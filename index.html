@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>``` JS Modal-window ```</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/modal.css">
+
+</head>
+<body>
+	<div class="container">
+		<h1 class="text-center">Список</h1>
+		<div class="row" id="cards-list">
+		</div>
+	</div>
+	<!-- Content -->
+	<script src="js/displayJS.js"></script>
+	<script src="js/plugins/modal.js"></script>
+	<script src="js/plugins/confirm.js"></script>
+</body>
+<script>
+	let fruits = [
+		{id: 1, title: 'Яблоко', price: 20, img: 'https://bit.ly/33WW1uF'},
+		{id: 2, title: 'Банан', price: 35, img: 'https://bit.ly/2ULA5P8'},
+		{id: 3, title: 'Виноград', price: 50, img: 'https://bit.ly/2xy4jwY'},
+	]
+
+	// Новое модальное окно
+	const fruitModal = displayJS.modal({
+		title: 'Цена продукта',
+		closable: true,
+		footerButtons: [
+			{text: 'OK', type: 'secondary', handler(){
+				fruitModal.close()
+			}},
+		],
+	})
+
+	function render(){
+		const container = document.querySelector('#cards-list')
+		container.innerHTML = ''
+
+		fruits.forEach(item => {
+			const fruit = document.createElement('div')
+			fruit.classList.add('col')
+			fruit.insertAdjacentHTML('afterbegin', `
+				<div class="card">
+					<img class="card-img-top" style = 'height:300px' src="${item.img}" alt="${item.title}" />
+					<div class="card-body">
+						<h3 class="card-title">${item.title}</h3>
+						<button class="btn btn-primary" data-btn="price" data-id="${item.id}">Посмотреть цену</button>
+						<button class="btn btn-danger" data-btn="remove" data-id="${item.id}">Удалить</button>
+					</div>
+				</div>
+			`)
+
+			container.appendChild(fruit)
+		})
+
+	}
+	render()
+
+	document.addEventListener('click', e => {
+		e.preventDefault()
+		const btnType = e.target.dataset.btn
+		if (btnType === "price"){
+			const id = +e.target.dataset.id
+			const fruit = fruits.find(fruit => fruit.id === id)
+			fruitModal.setTitle(fruit.title)
+			fruitModal.setContent(`<p>Цена продукта <b>${fruit.title}</b> ${fruit.price}$</p>`)
+			fruitModal.open()
+		}
+		else if (btnType === "remove"){
+			const id = +e.target.dataset.id
+			const fruit = fruits.find(fruit => fruit.id === id)
+			displayJS.confirm({
+				title: 'Удалить?',
+				content: `<p>Вы действительно хотите удалить фрукт: ${fruit.title}?</p>`,
+			}).then(() => {
+				fruits = fruits.filter(f => f.id !== id)
+				render()
+			})
+			.catch(() => {
+				console.log('Отмена')
+			})
+		}
+	})
+
+
+</script>
+</html>
